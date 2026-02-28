@@ -1,0 +1,76 @@
+services:
+
+  # ── APPLICATION ─────────────────────────────────────────────────────────────
+  incident-logger:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: incident-logger
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/incidentdb
+    depends_on:
+      postgres:
+        condition: service_healthy     # wait for postgres to be ready before starting
+    networks:
+      - incident-network
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=8000"
+      - "prometheus.path=/metrics"
+
+
+  # ── DATABASE ─────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: incident-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB:       incidentdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data   # persist data across restarts
+    ports:
+      - "5432:5432"                              # expose for local debugging only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - incident-network
+
+
+  # ── DATABASE UI (optional) ───────────────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: incident-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - incident-network
+    profiles:
+      - debug                  # only starts when you run: docker compose --profile debug up
+
+
+# ── VOLUMES ───────────────────────────────────────────────────────────────────
+volumes:
+  postgres_data:               # named volume — data survives container restarts
+
+
+# ── NETWORKS ──────────────────────────────────────────────────────────────────
+networks:
+  incident-network:
+    driver: bridge
