@@ -1,3 +1,4 @@
+cat > .github/workflows/ci-cd.yml << 'EOF'
 name: CI/CD Pipeline — Incident Logger
 
 on:
@@ -31,12 +32,10 @@ jobs:
       - name: Run flake8
         run: flake8 app/ --max-line-length=120 --ignore=E501,W292,E221,E251,E241,F401,E302
 
-
   test:
     name: Test
     runs-on: ubuntu-latest
     needs: lint
-
     services:
       postgres:
         image: postgres:15-alpine
@@ -51,7 +50,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,16 +68,13 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: pytest tests/ -v
 
-
   build:
     name: Build & Push
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main'
-
     outputs:
       image: ${{ steps.build-image.outputs.image }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -106,12 +101,10 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-
   deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     needs: build
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -140,30 +133,23 @@ jobs:
           key:         ${{ secrets.EC2_SSH_KEY }}
           envs:        ECR_REGISTRY,ECR_REPOSITORY,IMAGE_TAG,AWS_REGION
           script: |
-            # Pull latest code including docker-compose.yml
             cd /home/ubuntu/pulseops-incident-logger
             GIT_SSH_COMMAND='ssh -i ~/.ssh/deploy_key' git pull origin main
 
-            # Login to ECR
             aws ecr get-login-password --region $AWS_REGION | \
               docker login --username AWS --password-stdin $ECR_REGISTRY
 
-            # Pull new image
             docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-            # Store current tag for rollback
             PREVIOUS_TAG=$(docker inspect incident-logger \
               --format='{{index .Config.Labels "image.tag"}}' 2>/dev/null || echo "latest")
 
-            # Deploy new image
             export IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
             export IMAGE_TAG=$IMAGE_TAG
             docker compose up -d --no-deps incident-logger
 
-            # Wait for container to start
             sleep 10
 
-            # Health check
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health/ready)
 
             if [ "$HTTP_STATUS" == "200" ]; then
@@ -177,13 +163,11 @@ jobs:
               exit 1
             fi
 
-
   notify:
     name: Notify
     runs-on: ubuntu-latest
     needs: deploy
     if: always()
-
     steps:
       - name: Notify deployment status
         run: |
@@ -196,3 +180,4 @@ jobs:
             echo "Commit: ${{ github.sha }}"
             echo "Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           fi
+EOF
