@@ -98,9 +98,12 @@ resource "aws_instance" "pulseops_server" {
                 sudo apt update -y
                 sudo apt install -y docker.io docker-compose git
                 usermod -aG docker $user
+
                 sudo systemctl start docker
                 sudo systemctl enable docker
+                sudo apt update && sudo apt install -y docker-compose-plugin
                 EOF
+                
   tags = {
     Name    = "pulseops-server"
     Project = "Pulseops"

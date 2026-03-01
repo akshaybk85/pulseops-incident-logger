@@ -2,10 +2,7 @@ services:
 
   # ── APPLICATION ─────────────────────────────────────────────────────────────
   incident-logger:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
+    image: ${IMAGE}                    # pulled from ECR during deployment
     container_name: incident-logger
     restart: unless-stopped
     ports:
@@ -23,6 +20,7 @@ services:
       - "prometheus.scrape=true"
       - "prometheus.port=8000"
       - "prometheus.path=/metrics"
+      - "image.tag=${IMAGE_TAG}"       # used by rollback to identify previous image
 
 
   # ── DATABASE ─────────────────────────────────────────────────────────────────
