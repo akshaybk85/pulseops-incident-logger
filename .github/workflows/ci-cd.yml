@@ -31,7 +31,6 @@ jobs:
 
       - name: Run flake8
         run: flake8 app/ --max-line-length=120 --ignore=E501,W292,E221,E251,E241,F401,E302
-        
 
 
 # ── JOB 2: TEST ───────────────────────────────────────────────────────────────
@@ -161,16 +160,13 @@ jobs:
             PREVIOUS_TAG=$(docker inspect incident-logger \
               --format='{{index .Config.Labels "image.tag"}}' 2>/dev/null || echo "latest")
 
-            # Update image tag in environment
-            export NEW_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
             # Navigate to project directory
             cd /home/ubuntu/pulseops-incident-logger
 
-
-            # Update the image in docker-compose
-            export IMAGE=$NEW_IMAGE
-            docker compose up -d --no-deps pulseops-incident-logger
+            # Deploy new image
+            export IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            export IMAGE_TAG=$IMAGE_TAG
+            docker compose up -d --no-deps incident-logger
 
             # Wait for container to start
             sleep 10
@@ -184,9 +180,10 @@ jobs:
               echo "❌ Deploy failed — health check returned $HTTP_STATUS"
               echo "🔄 Rolling back to previous image..."
 
-              # Rollback to previous image
-              export IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$PREVIOUS_TAG \
-                docker compose up -d --no-deps pulseops-incident-logger
+              # ✅ Fixed: export and docker compose on separate lines
+              export IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$PREVIOUS_TAG
+              export IMAGE_TAG=$PREVIOUS_TAG
+              docker compose up -d --no-deps incident-logger
 
               exit 1
             fi
