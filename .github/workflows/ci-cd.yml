@@ -166,7 +166,7 @@ jobs:
             # Deploy new image
             export IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
             export IMAGE_TAG=$IMAGE_TAG
-            docker compose up -d --no-deps incident-logger
+            docker-compose up -d --no-deps incident-logger
 
             # Wait for container to start
             sleep 10
@@ -183,7 +183,7 @@ jobs:
               # ✅ Fixed: export and docker compose on separate lines
               export IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$PREVIOUS_TAG
               export IMAGE_TAG=$PREVIOUS_TAG
-              docker compose up -d --no-deps incident-logger
+              docker-compose up -d --no-deps incident-logger
 
               exit 1
             fi
