@@ -70,6 +70,7 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+          PYTHONPATH: ${{ github.workspace }}
         run: pytest tests/ -v
 
 
