@@ -1,6 +1,5 @@
 services:
 
-  # ── APPLICATION ─────────────────────────────────────────────────────────────
   incident-logger:
     image: ${IMAGE}
     container_name: incident-logger
@@ -22,8 +21,6 @@ services:
       - "prometheus.path=/metrics"
       - "image.tag=${IMAGE_TAG}"
 
-
-  # ── DATABASE ─────────────────────────────────────────────────────────────────
   postgres:
     image: postgres:15-alpine
     container_name: incident-postgres
@@ -44,8 +41,6 @@ services:
     networks:
       - incident-network
 
-
-  # ── DATABASE UI (optional) ───────────────────────────────────────────────────
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: incident-pgadmin
@@ -62,13 +57,9 @@ services:
     profiles:
       - debug
 
-
-# ── VOLUMES ───────────────────────────────────────────────────────────────────
 volumes:
   postgres_data:
 
-
-# ── NETWORKS ──────────────────────────────────────────────────────────────────
 networks:
   incident-network:
     driver: bridge
