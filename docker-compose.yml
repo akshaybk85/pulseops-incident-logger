@@ -1,5 +1,3 @@
-cat > /home/ubuntu/pulseops-incident-logger/docker-compose.yml << 'EOF'
-
 services:
 
   incident-logger:
@@ -65,4 +63,3 @@ volumes:
 networks:
   incident-network:
     driver: bridge
-EOF
