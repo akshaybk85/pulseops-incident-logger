@@ -7,9 +7,9 @@ RUN pip install --upgrade pip && \\
     pip install --prefix=/install  --no-cache-dir -r requirements.txt
 
 
-// Stage 2
+#Stage 2
 
-FROM python:3.11-slim as production
+FROM python:3.11-slim As production
 
 WORKDIR /app
 
