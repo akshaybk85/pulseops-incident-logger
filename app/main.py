@@ -3,7 +3,6 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.database import engine, Base
 from app.routes import incidents, health
-from app.config import settings
 
 # Create all database tables on startup
 # In production you'd use Alembic migrations instead

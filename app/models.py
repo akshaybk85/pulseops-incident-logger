@@ -25,15 +25,15 @@ class IncidentStatus(str, enum.Enum):
 class Incident(Base):
     __tablename__ = "incidents"
 
-    id          = Column(Integer, primary_key=True, index=True)
-    title       = Column(String(255), nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
-    severity    = Column(Enum(SeverityLevel), default=SeverityLevel.medium, nullable=False)
-    status      = Column(Enum(IncidentStatus), default=IncidentStatus.open, nullable=False)
-    source      = Column(String(100), nullable=True)   # e.g. "alertmanager", "manual"
-    alert_name  = Column(String(255), nullable=True)   # original alert name from Prometheus
+    severity = Column(Enum(SeverityLevel), default=SeverityLevel.medium, nullable=False)
+    status = Column(Enum(IncidentStatus), default=IncidentStatus.open, nullable=False)
+    source = Column(String(100), nullable=True)   # e.g. "alertmanager", "manual"
+    alert_name = Column(String(255), nullable=True)   # original alert name from Prometheus
 
     # Timestamps — set automatically by the database
-    created_at  = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at  = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     resolved_at = Column(DateTime(timezone=True), nullable=True)

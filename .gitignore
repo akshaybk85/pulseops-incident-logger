@@ -6,3 +6,20 @@ __pycache__/
 .DS_Store
 venv/
 .venv/
+
+# Terraform - NEVER commit these
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/*.tfvars
+terraform/override.tf
+terraform/override.tf.json
+terraform/*_override.tf
+terraform/*_override.tf.json
+
+# SSH Keys - NEVER commit
+*.pem
+*.keyterraform.tfstate
+terraform.tfstate.backup
+*.tfstate

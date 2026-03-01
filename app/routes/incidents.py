@@ -107,7 +107,7 @@ def resolve_incident(incident_id: int, payload: IncidentResolve, db: Session = D
         raise HTTPException(status_code=400, detail="Incident is already resolved")
 
     # Set resolved state
-    incident.status     = IncidentStatus.resolved
+    incident.status = IncidentStatus.resolved
     incident.resolved_at = datetime.now(timezone.utc)
 
     if payload.resolution_note:
@@ -160,12 +160,12 @@ def alertmanager_webhook(payload: AlertmanagerWebhook, db: Session = Depends(get
             severity = raw_severity if raw_severity in SeverityLevel.__members__ else "medium"
 
             incident = Incident(
-                title      = alert.annotations.get("summary", alert.labels.get("alertname", "Unknown Alert")),
-                description= alert.annotations.get("description", ""),
-                severity   = severity,
-                source     = "alertmanager",
-                alert_name = alert.labels.get("alertname"),
-                status     = IncidentStatus.open
+                title=alert.annotations.get("summary", alert.labels.get("alertname", "Unknown Alert")),
+                description=alert.annotations.get("description", ""),
+                severity=severity,
+                source="alertmanager",
+                alert_name=alert.labels.get("alertname"),
+                status=IncidentStatus.open
             )
 
             db.add(incident)

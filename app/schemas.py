@@ -9,19 +9,19 @@ from app.models import SeverityLevel, IncidentStatus
 
 class IncidentCreate(BaseModel):
     """Schema for creating a new incident — POST /incidents"""
-    title:       str          = Field(..., min_length=3, max_length=255, example="High CPU on EC2")
+    title: str = Field(..., min_length=3, max_length=255, example="High CPU on EC2")
     description: Optional[str] = Field(None, example="CPU usage above 90% for 5 minutes")
-    severity:    SeverityLevel = Field(default=SeverityLevel.medium, example="critical")
-    source:      Optional[str] = Field(None, max_length=100, example="alertmanager")
-    alert_name:  Optional[str] = Field(None, max_length=255, example="HighCPUUsage")
+    severity: SeverityLevel = Field(default=SeverityLevel.medium, example="critical")
+    source: Optional[str] = Field(None, max_length=100, example="alertmanager")
+    alert_name: Optional[str] = Field(None, max_length=255, example="HighCPUUsage")
 
 
 class IncidentUpdate(BaseModel):
     """Schema for updating an incident — PUT /incidents/{id}"""
-    title:       Optional[str]           = Field(None, min_length=3, max_length=255)
-    description: Optional[str]           = None
-    severity:    Optional[SeverityLevel] = None
-    status:      Optional[IncidentStatus] = None
+    title: Optional[str] = Field(None, min_length=3, max_length=255)
+    description: Optional[str] = None
+    severity: Optional[SeverityLevel] = None
+    status: Optional[IncidentStatus] = None
 
 
 # --- RESPONSE SCHEMAS ---
@@ -29,15 +29,15 @@ class IncidentUpdate(BaseModel):
 
 class IncidentResponse(BaseModel):
     """Full incident object returned by the API"""
-    id:          int
-    title:       str
+    id: int
+    title: str
     description: Optional[str]
-    severity:    SeverityLevel
-    status:      IncidentStatus
-    source:      Optional[str]
-    alert_name:  Optional[str]
-    created_at:  datetime
-    updated_at:  Optional[datetime]
+    severity: SeverityLevel
+    status: IncidentStatus
+    source: Optional[str]
+    alert_name: Optional[str]
+    created_at: datetime
+    updated_at: Optional[datetime]
     resolved_at: Optional[datetime]
 
     class Config:
@@ -54,12 +54,13 @@ class IncidentResolve(BaseModel):
 # We parse this and auto-create an incident
 
 class AlertmanagerAlert(BaseModel):
-    status:      str
-    labels:      dict
+    status: str
+    labels: dict
     annotations: dict
+
 
 class AlertmanagerWebhook(BaseModel):
     """Incoming webhook payload from Alertmanager"""
-    receiver:    str
-    status:      str
-    alerts:      list[AlertmanagerAlert]
+    receiver: str
+    status: str
+    alerts: list[AlertmanagerAlert]
